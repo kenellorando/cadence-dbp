@@ -3,9 +3,7 @@ package main
 import (
 	"os"
 	"fmt"
-	//"time"
 	"path/filepath"
-	//"database/sql"
 	_ "github.com/lib/pq"
 )
 
@@ -16,6 +14,15 @@ const (
 )
 
 func main() {
+	// Check if MUSIC_DIR exists. Return if err
+	if _, err := os.Stat(MUSIC_DIR); err != nil {
+		if os.IsNotExist(err) {
+			fmt.Printf("Music directory not found.\n")
+			return
+		}
+	}
+
+	// Recursive walk on MUSIC_DIR's contents
 	err := filepath.Walk(MUSIC_DIR, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
