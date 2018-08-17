@@ -52,6 +52,9 @@ func main() {
 			tags.Album(),
 			tags.Artist(),
 			tags.Genre())
+
+		// Close the file
+		file.Close()
 		return nil
 	})
 
