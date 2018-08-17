@@ -43,6 +43,18 @@ func main() {
 			return nil
 		}
 
+		// Skip non-music files
+		music := false
+		for _, ext := range extensions {
+			if strings.HasSuffix(path, ext) {
+				music = true
+				break
+			}
+		}
+		if !music {
+			return nil
+		}
+
 		// Open a file for reading
 		file, e := os.Open(path)
 		if e != nil {
