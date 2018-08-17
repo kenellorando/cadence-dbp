@@ -42,6 +42,12 @@ func main() {
 		if er != nil {
 			return er
 		}
+
+		fmt.Printf("title %q, album %q, artist %q, genre %q.\n",
+			tags.Title(),
+			tags.Album(),
+			tags.Artist(),
+			tags.Genre())
 		return nil
 	})
 
