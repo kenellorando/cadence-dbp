@@ -31,6 +31,10 @@ func main() {
 		}
 		fmt.Printf("Visited file: %q\n", path)
 
+		if info.IsDir() {
+			return nil
+		}
+
 		// Open a file for reading
 		file, e := os.Open(path)
 		if e != nil {
