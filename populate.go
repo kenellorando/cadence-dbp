@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/dhowden/tag"
 	_ "github.com/lib/pq"
@@ -31,6 +32,7 @@ func main() {
 		}
 		fmt.Printf("Visited file: %q\n", path)
 
+		// Skip directories
 		if info.IsDir() {
 			return nil
 		}
