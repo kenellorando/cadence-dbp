@@ -1,15 +1,17 @@
 package main
 
 import (
-	"os"
 	"fmt"
+	"os"
 	"path/filepath"
+
+	"github.com/dhowden/tag"
 	_ "github.com/lib/pq"
 )
 
 const (
-	DB_USER = "cadence"
-	DB_NAME = "cadence"
+	DB_USER   = "cadence"
+	DB_NAME   = "cadence"
 	MUSIC_DIR = "/home/ken/cadence_testdir/"
 )
 
