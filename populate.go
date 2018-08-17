@@ -17,6 +17,12 @@ const (
 )
 
 func main() {
+	var extensions = [...]string{
+		".mp3",
+		".m4a",
+		".ogg",
+		".flac"}
+
 	// Check if MUSIC_DIR exists. Return if err
 	if _, err := os.Stat(MUSIC_DIR); err != nil {
 		if os.IsNotExist(err) {
