@@ -30,6 +30,12 @@ func main() {
 			return err
 		}
 		fmt.Printf("Visited file: %q\n", path)
+
+		// Open a file for reading
+		file, e := os.Open(path)
+		if e != nil {
+			return e
+		}
 		return nil
 	})
 
