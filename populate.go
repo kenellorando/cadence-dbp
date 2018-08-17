@@ -36,6 +36,12 @@ func main() {
 		if e != nil {
 			return e
 		}
+
+		// Read metadata from the file
+		tags, er := tag.ReadFrom(file)
+		if er != nil {
+			return er
+		}
 		return nil
 	})
 
