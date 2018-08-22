@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	DB_USER   = "cadence"
+	DB_USER   = "postgres"
 	DB_NAME   = "cadence"
 	MUSIC_DIR = "/home/ken/cadence_testdir/"
 )
@@ -36,7 +36,7 @@ func main() {
 		if err != nil {
 			return err
 		}
-		fmt.Printf("Visited file: %q\n", path)
+		//fmt.Printf("Visited file: %q\n", path)
 
 		// Skip directories
 		if info.IsDir() {
@@ -67,11 +67,12 @@ func main() {
 			return er
 		}
 
-		fmt.Printf("title %q, album %q, artist %q, genre %q.\n",
+		fmt.Printf("title %q, album %q, artist %q, genre %q, year %d.\n",
 			tags.Title(),
 			tags.Album(),
 			tags.Artist(),
-			tags.Genre())
+			tags.Genre(),
+			tags.Year())
 
 		// Close the file
 		file.Close()
