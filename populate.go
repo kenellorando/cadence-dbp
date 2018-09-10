@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"database/sql"
 
 	"github.com/dhowden/tag"
 	_ "github.com/lib/pq"
@@ -14,9 +15,11 @@ const (
 	DB_USER   = "postgres"
 	DB_NAME   = "cadence"
 	MUSIC_DIR = "/home/ken/cadence_testdir/"
+	SQLINSERT = `INSERT INTO cadence (title, album, artist, genre, year) VALUES ($1, $2, $3, $4, $5)`
 )
 
 func main() {
+	db, err = sql.Open()
 	var extensions = [...]string{
 		".mp3",
 		".m4a",
@@ -67,12 +70,21 @@ func main() {
 			return er
 		}
 
+
 		fmt.Printf("title %q, album %q, artist %q, genre %q, year %d.\n",
 			tags.Title(),
 			tags.Album(),
 			tags.Artist(),
 			tags.Genre(),
 			tags.Year())
+		
+		// Todo: connect to database
+		
+		// Insert into database
+		_, err = db.Exec(SQLINSERT, tags.Title(), tags.Album(), tags.Artist(), tags.Genre(), tags.Year())
+		if err != nil {
+			panic(err)
+		}
 
 		// Close the file
 		file.Close()
