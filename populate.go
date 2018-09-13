@@ -48,8 +48,9 @@ func main() {
 		return
 	}
 
-	SQLINSERT := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s, %s) VALUES "+
-		"($1, $2, $3, $4, $5, $6) WHERE NOT EXISTS (SELECT %s FROM %s WHERE %s=$6)",
+	SQLINSERT := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s, %s) SELECT "+
+		"$1, $2, $3, $4, $5, $6::VARCHAR WHERE NOT EXISTS "+
+		"(SELECT %s FROM %s WHERE %s=$6)",
 		sec.Key("db_table").String(), sec.Key("db_column_title").String(),
 		sec.Key("db_column_album").String(), sec.Key("db_column_artist").String(),
 		sec.Key("db_column_genre").String(), sec.Key("db_column_year").String(),
@@ -156,7 +157,8 @@ func main() {
 			tags.Year())
 
 		// Insert into database
-		_, err = db.Exec(SQLINSERT, tags.Title(), tags.Album(), tags.Artist(), tags.Genre(), tags.Year(), path)
+		_, err = db.Exec(SQLINSERT, tags.Title(), tags.Album(), tags.Artist(),
+			tags.Genre(), tags.Year(), path)
 		if err != nil {
 			panic(err)
 		}
