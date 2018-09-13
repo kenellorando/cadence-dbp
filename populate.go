@@ -19,8 +19,10 @@ const (
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Printf("Usage: %s music_dir\n")
+	if len(os.Args) < 3 {
+		fmt.Printf("Usage: %s music_dir server_dir\n")
+		fmt.Println("music_dir is the directory containing music to be parsed.")
+		fmt.Println("server_dir is the path to a cadence-server install whose config\n  files to use for database connection.")
 		return
 	}
 
