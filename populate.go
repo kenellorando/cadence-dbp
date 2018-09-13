@@ -37,6 +37,12 @@ func main() {
 		return
 	}
 
+	sec, err := cfg.GetSection("DEFAULT")
+	if err != nil {
+		fmt.Println("Error during config parse.")
+		return
+	}
+
 	db, err = sql.Open()
 	var extensions = [...]string{
 		".mp3",
