@@ -28,6 +28,15 @@ func main() {
 
 	MUSIC_DIR := os.Args[1]
 
+	// Load the configuration from cadence-server
+	// By loading the override file second, it overrides the defaults file automatically.
+	cfg, err := ini.LooseLoad(filepath.Join(os.Args[2], "default-config.ini"),
+		filepath.Join(os.Args[2], "config.ini"))
+	if err != nil {
+		fmt.Println("Error during config read.")
+		return
+	}
+
 	db, err = sql.Open()
 	var extensions = [...]string{
 		".mp3",
