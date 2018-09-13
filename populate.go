@@ -139,6 +139,20 @@ func main() {
 			sslmode,
 			timeout)
 
+		// Use the connect string to acquire a database connection
+		db, err := sql.Open("postgres", connect)
+		if err != nil {
+			panic(err)
+		}
+
+		defer db.Close()
+
+		// For some silly reason, Open doesn't actually open a connection
+		// Ping the connection to make sure it is actually open
+		if err = db.Ping(); err != nil {
+			panic(err)
+		}
+
 		// Insert into database
 		_, err = db.Exec(SQLINSERT, tags.Title(), tags.Album(), tags.Artist(), tags.Genre(), tags.Year(), path)
 		if err != nil {
