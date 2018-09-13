@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -51,6 +50,8 @@ func main() {
 		sec.Key("db_column_album").String(), sec.Key("db_column_artist").String(),
 		sec.Key("db_column_genre").String(), sec.Key("db_column_year").String(),
 		sec.Key("db_column_path").String())
+
+	fmt.Println(SQLINSERT)
 
 	var extensions = [...]string{
 		".mp3",
@@ -112,10 +113,10 @@ func main() {
 		// Todo: connect to database
 
 		// Insert into database
-		_, err = db.Exec(SQLINSERT, tags.Title(), tags.Album(), tags.Artist(), tags.Genre(), tags.Year(), path)
-		if err != nil {
-			panic(err)
-		}
+		//_, err = db.Exec(SQLINSERT, tags.Title(), tags.Album(), tags.Artist(), tags.Genre(), tags.Year(), path)
+		//if err != nil {
+		//		panic(err)
+		//	}
 
 		// Close the file
 		file.Close()
