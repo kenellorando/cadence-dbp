@@ -12,11 +12,6 @@ import (
 	"gopkg.in/ini.v1"
 )
 
-const (
-	DB_USER = "postgres"
-	DB_NAME = "cadence"
-)
-
 func main() {
 	if len(os.Args) < 3 {
 		fmt.Printf("Usage: %s music_dir server_dir\n")
@@ -48,7 +43,6 @@ func main() {
 		sec.GetKey("db_column_genre"), sec.GetKey("db_column_year"),
 		sec.GetKey("db_column_path"))
 
-	db, err = sql.Open()
 	var extensions = [...]string{
 		".mp3",
 		".m4a",
