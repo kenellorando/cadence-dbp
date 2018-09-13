@@ -22,6 +22,15 @@ func main() {
 
 	MUSIC_DIR := os.Args[1]
 
+	// Check if server default-config.ini exists. Return if err
+	// If that file does not exist, we are not looking at a valid cadence-server instance
+	if _, err := os.Stat(filepath.Join(os.Args[2], "default-config.ini")); err != nil {
+		if os.IsNotExist(err) {
+			fmt.Printf("%s is not a valid cadence-server install directory.\n", os.Args[2])
+			return
+		}
+	}
+
 	// Load the configuration from cadence-server
 	// By loading the override file second, it overrides the defaults file automatically.
 	cfg, err := ini.LooseLoad(filepath.Join(os.Args[2], "default-config.ini"),
