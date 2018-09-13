@@ -48,7 +48,8 @@ func main() {
 		return
 	}
 
-	SQLINSERT := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s, %s) VALUES ($1, $2, $3, $4, $5, $6)",
+	SQLINSERT := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s, %s) VALUES "+
+		"($1, $2, $3, $4, $5, $6) WHERE NOT EXISTS (SELECT path from cadence WHERE path=$6)",
 		sec.Key("db_table").String(), sec.Key("db_column_title").String(),
 		sec.Key("db_column_album").String(), sec.Key("db_column_artist").String(),
 		sec.Key("db_column_genre").String(), sec.Key("db_column_year").String(),
