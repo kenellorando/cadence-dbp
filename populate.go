@@ -9,6 +9,7 @@ import (
 
 	"github.com/dhowden/tag"
 	_ "github.com/lib/pq"
+	"gopkg.in/ini.v1"
 )
 
 const (
