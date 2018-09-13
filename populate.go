@@ -70,6 +70,46 @@ func main() {
 		}
 	}
 
+	// Connect to the database
+	// First, set up the connection string
+	// By necessity, we need to parse out the encryption setting
+	sslmode := "disable"
+	setting := sec.Key("db_encrypt").String()
+	if setting == "yes" || setting == "on" || setting == "1" {
+		sslmode = "require"
+	}
+
+	// Now, check for None timeout
+	timeout := sec.Key("db_timeout").String()
+	if timeout == "None" {
+		timeout = "0"
+	}
+
+	// Format our values into the connection string
+	connect := fmt.Sprintf("host=%s port=%s user=%s password='%s' dbname=%s "+
+		"sslmode=%s connect_timeout=%s",
+		sec.Key("db_host").String(),
+		sec.Key("db_port").String(),
+		sec.Key("db_username").String(),
+		sec.Key("db_password").String(),
+		sec.Key("db_name").String(),
+		sslmode,
+		timeout)
+
+	// Use the connect string to acquire a database connection
+	db, err := sql.Open("postgres", connect)
+	if err != nil {
+		panic(err)
+	}
+
+	defer db.Close()
+
+	// For some silly reason, Open doesn't actually open a connection
+	// Ping the connection to make sure it is actually open
+	if err = db.Ping(); err != nil {
+		panic(err)
+	}
+
 	// Recursive walk on MUSIC_DIR's contents
 	err = filepath.Walk(MUSIC_DIR, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -112,46 +152,6 @@ func main() {
 			tags.Artist(),
 			tags.Genre(),
 			tags.Year())
-
-		// Connect to the database
-		// First, set up the connection string
-		// By necessity, we need to parse out the encryption setting
-		sslmode := "disable"
-		setting := sec.Key("db_encrypt").String()
-		if setting == "yes" || setting == "on" || setting == "1" {
-			sslmode = "require"
-		}
-
-		// Now, check for None timeout
-		timeout := sec.Key("db_timeout").String()
-		if timeout == "None" {
-			timeout = "0"
-		}
-
-		// Format our values into the connection string
-		connect := fmt.Sprintf("host=%s port=%s user=%s password='%s' dbname=%s"+
-			"sslmode=%s connect_timeout=%s",
-			sec.Key("db_host").String(),
-			sec.Key("db_port").String(),
-			sec.Key("db_username").String(),
-			sec.Key("db_password").String(),
-			sec.Key("db_name").String(),
-			sslmode,
-			timeout)
-
-		// Use the connect string to acquire a database connection
-		db, err := sql.Open("postgres", connect)
-		if err != nil {
-			panic(err)
-		}
-
-		defer db.Close()
-
-		// For some silly reason, Open doesn't actually open a connection
-		// Ping the connection to make sure it is actually open
-		if err = db.Ping(); err != nil {
-			panic(err)
-		}
 
 		// Insert into database
 		_, err = db.Exec(SQLINSERT, tags.Title(), tags.Album(), tags.Artist(), tags.Genre(), tags.Year(), path)
