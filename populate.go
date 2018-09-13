@@ -57,8 +57,6 @@ func main() {
 		sec.Key("db_column_path").String(), sec.Key("db_column_path").String(),
 		sec.Key("db_table").String(), sec.Key("db_column_path").String())
 
-	fmt.Println(SQLINSERT)
-
 	var extensions = [...]string{
 		".mp3",
 		".m4a",
