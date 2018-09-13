@@ -13,9 +13,8 @@ import (
 )
 
 const (
-	DB_USER   = "postgres"
-	DB_NAME   = "cadence"
-	SQLINSERT = `INSERT INTO cadence (title, album, artist, genre, year, path) VALUES ($1, $2, $3, $4, $5, $6) WHERE NOT EXISTS (SELECT path from cadence WHERE path=$6)`
+	DB_USER = "postgres"
+	DB_NAME = "cadence"
 )
 
 func main() {
@@ -42,6 +41,12 @@ func main() {
 		fmt.Println("Error during config parse.")
 		return
 	}
+
+	SQLINSERT := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s, %s) VALUES ($1, $2, $3, $4, $5, $6)",
+		sec.GetKey("db_table"), sec.GetKey("db_column_title"),
+		sec.GetKey("db_column_album"), sec.GetKey("db_column_artist"),
+		sec.GetKey("db_column_genre"), sec.GetKey("db_column_year"),
+		sec.GetKey("db_column_path"))
 
 	db, err = sql.Open()
 	var extensions = [...]string{
