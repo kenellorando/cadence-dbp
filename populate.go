@@ -14,7 +14,6 @@ import (
 const (
 	DB_USER   = "postgres"
 	DB_NAME   = "cadence"
-	MUSIC_DIR = "/home/ken/cadence_testdir/"
 	SQLINSERT = `INSERT INTO cadence (title, album, artist, genre, year, path) VALUES ($1, $2, $3, $4, $5, $6) WHERE NOT EXISTS (SELECT path from cadence WHERE path=$6)`
 )
 
@@ -23,6 +22,8 @@ func main() {
 		fmt.Printf("Usage: %s music_dir\n")
 		return
 	}
+
+	MUSIC_DIR := os.Args[1]
 
 	db, err = sql.Open()
 	var extensions = [...]string{
