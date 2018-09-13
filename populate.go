@@ -19,6 +19,11 @@ const (
 )
 
 func main() {
+	if len(os.Args) < 2 {
+		fmt.Printf("Usage: %s music_dir\n")
+		return
+	}
+
 	db, err = sql.Open()
 	var extensions = [...]string{
 		".mp3",
