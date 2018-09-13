@@ -118,14 +118,14 @@ func main() {
 		// By necessity, we need to parse out the encryption setting
 		sslmode := "disable"
 		setting := sec.Key("db_encrypt").String()
-		if setting=="yes" || setting=="on" or setting=="1" {
-			sslmode="require"
+		if setting == "yes" || setting == "on" || setting == "1" {
+			sslmode = "require"
 		}
 
 		// Now, check for None timeout
 		timeout := sec.Key("db_timeout").String()
-		if timeout=="None" {
-			timeout="0"
+		if timeout == "None" {
+			timeout = "0"
 		}
 
 		// Format our values into the connection string
