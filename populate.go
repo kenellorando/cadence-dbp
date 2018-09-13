@@ -67,7 +67,7 @@ func main() {
 	}
 
 	// Recursive walk on MUSIC_DIR's contents
-	err := filepath.Walk(MUSIC_DIR, func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(MUSIC_DIR, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
