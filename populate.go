@@ -22,12 +22,23 @@ func main() {
 
 	MUSIC_DIR := os.Args[1]
 
+	// Check if server default-config.ini exists. Return if err
+	// If that file does not exist, we are not looking at a valid cadence-server instance
+	if _, err := os.Stat(filepath.Join(os.Args[2], "default-config.ini")); err != nil {
+		if os.IsNotExist(err) {
+			fmt.Printf("%s is not a valid cadence-server install directory.\n", os.Args[2])
+			return
+		}
+	}
+
 	// Load the configuration from cadence-server
 	// By loading the override file second, it overrides the defaults file automatically.
-	cfg, err := ini.LooseLoad(filepath.Join(os.Args[2], "default-config.ini"),
+	cfg, err := ini.LoadSources(ini.LoadOptions{Loose: true,
+		AllowPythonMultilineValues: true},
+		filepath.Join(os.Args[2], "default-config.ini"),
 		filepath.Join(os.Args[2], "config.ini"))
 	if err != nil {
-		fmt.Println("Error during config read.")
+		fmt.Println("Error during config read - %v.", err)
 		return
 	}
 
@@ -37,11 +48,14 @@ func main() {
 		return
 	}
 
-	SQLINSERT := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s, %s) VALUES ($1, $2, $3, $4, $5, $6)",
-		sec.GetKey("db_table"), sec.GetKey("db_column_title"),
-		sec.GetKey("db_column_album"), sec.GetKey("db_column_artist"),
-		sec.GetKey("db_column_genre"), sec.GetKey("db_column_year"),
-		sec.GetKey("db_column_path"))
+	SQLINSERT := fmt.Sprintf("INSERT INTO %s (%s, %s, %s, %s, %s, %s) SELECT "+
+		"$1, $2, $3, $4, $5, $6::VARCHAR WHERE NOT EXISTS "+
+		"(SELECT %s FROM %s WHERE %s=$6)",
+		sec.Key("db_table").String(), sec.Key("db_column_title").String(),
+		sec.Key("db_column_album").String(), sec.Key("db_column_artist").String(),
+		sec.Key("db_column_genre").String(), sec.Key("db_column_year").String(),
+		sec.Key("db_column_path").String(), sec.Key("db_column_path").String(),
+		sec.Key("db_table").String(), sec.Key("db_column_path").String())
 
 	var extensions = [...]string{
 		".mp3",
@@ -57,8 +71,48 @@ func main() {
 		}
 	}
 
+	// Connect to the database
+	// First, set up the connection string
+	// By necessity, we need to parse out the encryption setting
+	sslmode := "disable"
+	setting := sec.Key("db_encrypt").String()
+	if setting == "yes" || setting == "on" || setting == "1" {
+		sslmode = "require"
+	}
+
+	// Now, check for None timeout
+	timeout := sec.Key("db_timeout").String()
+	if timeout == "None" {
+		timeout = "0"
+	}
+
+	// Format our values into the connection string
+	connect := fmt.Sprintf("host=%s port=%s user=%s password='%s' dbname=%s "+
+		"sslmode=%s connect_timeout=%s",
+		sec.Key("db_host").String(),
+		sec.Key("db_port").String(),
+		sec.Key("db_username").String(),
+		sec.Key("db_password").String(),
+		sec.Key("db_name").String(),
+		sslmode,
+		timeout)
+
+	// Use the connect string to acquire a database connection
+	db, err := sql.Open("postgres", connect)
+	if err != nil {
+		panic(err)
+	}
+
+	defer db.Close()
+
+	// For some silly reason, Open doesn't actually open a connection
+	// Ping the connection to make sure it is actually open
+	if err = db.Ping(); err != nil {
+		panic(err)
+	}
+
 	// Recursive walk on MUSIC_DIR's contents
-	err := filepath.Walk(MUSIC_DIR, func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(MUSIC_DIR, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -100,10 +154,9 @@ func main() {
 			tags.Genre(),
 			tags.Year())
 
-		// Todo: connect to database
-
 		// Insert into database
-		_, err = db.Exec(SQLINSERT, tags.Title(), tags.Album(), tags.Artist(), tags.Genre(), tags.Year(), path)
+		_, err = db.Exec(SQLINSERT, tags.Title(), tags.Album(), tags.Artist(),
+			tags.Genre(), tags.Year(), path)
 		if err != nil {
 			panic(err)
 		}
