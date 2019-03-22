@@ -1,3 +1,5 @@
+**Notice: This repository is deprecated-- [code](http://github.com/kenellorando/cadence) has been integrated with Cadence 4.0**
+
 # Cadence Database Populator
 The `cadence-dbp` "Cadence Database Populator" is a [Cadence Radio](http://cadenceradio.com/) auxillary tool for populating a database with music metadata used in searches and song requests.
 
